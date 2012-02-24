@@ -209,8 +209,8 @@ enum mcfg_methods
 
 // Convenience macros for distinguishing chip families
 
-#define MCFG_IS_8100(cfg) (((cfg >= MCFG_8100E_1) && (cfg <= MCFG_8103E_2)) || (cfg == MCFG_8401_1))
-#define MCFG_IS_8168(cfg) ((cfg >= MCFG_8168B_1) && (cfg <= MCFG_8168DP_1))
+#define MCFG_IS_8100(cfg) (((cfg >= MCFG_8100E_1) && (cfg <= MCFG_8105E_4)) || (cfg == MCFG_8401_1) || (cfg == MCFG_8402_1))
+#define MCFG_IS_8168(cfg) (((cfg >= MCFG_8168B_1) && (cfg <= MCFG_8168F_2)) || (cfg == MCFG_8411_1))
 #define MCFG_IS_8169(cfg) ((cfg >= MCFG_8169_1) && (cfg <= MCFG_8169SC_2))
 
 	//
