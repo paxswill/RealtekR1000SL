@@ -61,12 +61,12 @@ void RealtekR1000::RTL8100NicReset()
 			~(AcceptErr | AcceptRunt | AcceptBroadcast | AcceptMulticast |
 			  AcceptMyPhys |  AcceptAllPhys));
 
-	if (mcfg == CFG_14)
+	if (mcfg == MCFG_8402_2)
 	{
 		WriteMMIO8(ChipCmd, StopReq | CmdRxEnb | CmdTxEnb);
 		while (!(ReadMMIO32(TxConfig) & BIT_11)) IODelay(100);
 	}
-	else if ((mcfg != CFG_1) && (mcfg != CMF_2) && (mcfg != CFG_3))
+	else if (MCFG_8101E_3 < mcfg)
 	{
 		WriteMMIO8(ChipCmd, StopReq | CmdRxEnb | CmdTxEnb);
 		IODelay(100);
@@ -103,9 +103,9 @@ void RealtekR1000:RTL8100DisableEEE()
 {
 	switch (mcfg)
 	{
-		case CFG_11:
-		case CFG_12:
-		case CFG_13:
+		case MCFG_8105E_2:
+		case MCFG_8105E_3:
+		case MCFG_8105E_4:
 			WriteERI(0x1B0, 2, 0, ERIAR_ExGMAC);
 			WriteGMII16(0x1F, 0x0004);
 			WriteGMII16(0x10, 0x401F);
@@ -127,7 +127,7 @@ void RealtekR1000:RTL8100DisableEEE()
 
 			WriteGMII16(MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
 			break;
-		case CFG_14:
+		case MCFG_8402_1:
 			WriteERI(0x1B0, 2, 0, ERIAR_ExGMAC);
 			WriteGMII16(0x1F, 0x0004);
 			WriteGMII16(0x10, 0x401F);
@@ -152,13 +152,13 @@ void RealtekR1000:RTL8100DisableEEE()
 void RealtekR1000::RTL8100PowerDownPLL()
 {
 	DLog("RTL8100PowerDownPLL\n");
-	if ((mcfg == CFG_11 || mcfg == CFG_12 || mcfg == CFG_13)
+	if (MCFG_8105E_1 <= mcfg && mcfg <= MCFG_8105E_4)
 			&& eee_enable == 1)
 	{
 		RTL8100DisableEEE();
 	}
 
-	if (mcfg == CFG_13)
+	if (mcfg == MCFG_8105E_4)
 	{
 		if ((ReadMMIO8(0x8C) & BIT_28) && !(ReadMMIO8(0xEF) & BIT_2))
 		{
@@ -182,7 +182,7 @@ void RealtekR1000::RTL8100PowerDownPLL()
 	{
 		WriteGBII16(0x1F, 0x0000);
 		WriteGBII16(0x00, 0x0000);
-		if (mcfg >= CFG_10)
+		if (mcfg >= MCFG_8105E_1)
 		{
 			WriteMMIO32(RxConfig, ReadMMIO32(RxConfig) | AcceptBroadcast |
 					AcceptMulticast | AcceptMyPhys);
@@ -194,21 +194,21 @@ void RealtekR1000::RTL8100PowerDownPLL()
 
 	switch (mcfg)
 	{
-		case CFG_6:
-		case CFG_9:
+		case MCFG_8103E_1:
+		case MCFG_8401_1:
 			WriteMMIO8(DBG_reg, ReadMMIO8(DBG_reg) | BIT_3);
 			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
 			break;
-		case CFG_8:
+		case MCFG_8103E_3:
 			pciDev->configWrite8(0x81, 0);
 			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
 			break;
-		case CFG_7:
-		case CFG_10:
-		case CFG_11:
-		case CFG_12:
-		case CFG_13:
-		case CFG_14:
+		case MCFG_8103E_2:
+		case MCFG_8105E_1:
+		case MCFG_8105E_2:
+		case MCFG_8105E_3:
+		case MCFG_8105E_4:
+		case MCFG_8402_1:
 			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
 			break;
 		default:
@@ -216,7 +216,7 @@ void RealtekR1000::RTL8100PowerDownPLL()
 	}
 }
 
-// TODO - implement
+// Taken from rtl8101_powerdown_pll
 void RealtekR1000::RTL8100PowerUpPLL()
 {
 }
