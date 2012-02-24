@@ -97,10 +97,79 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 {
 }
 
+// TODO Add this to the private interface
+// To save you a hard search, EEE stands for Energy Effcient Ethernet
+void RealtekR1000:RTL8100DisableEEE(void)
+{
+}
 
-// TODO - implement
+
+// Taken from rtl8101_powerdown_pll
 void RealtekR1000::RTL8100PowerDownPLL()
 {
+	DLog("RTL8100PowerDownPLL\n");
+	if ((mcfg == CFG_11 || mcfg == CFG_12 || mcfg == CFG_13)
+			&& eee_enable == 1)
+	{
+		RTL8100DisableEEE();
+	}
+
+	if (mcfg == CFG_13)
+	{
+		if ((ReadMMIO8(0x8C) & BIT_28) && !(ReadMMIO8(0xEF) & BIT_2))
+		{
+			u32 gphy_val;
+			WriteGBII16(0x1F, 0x0000);
+			WriteGBII16(0x04, 0x0061);
+			WriteGBII16(0x00, 0x1200);
+			WriteGBII16(0x18, 0x0310);
+			IODelay(20 * 1000);
+			WriteGBII16(0x1F, 0x0005);
+			gphy_val = ReadGII16(0x1A);
+			gphy_val |= BIT_8 | BIT_0;
+			WriteGBII16(0x1A, gphy_val);
+			IODelay(20 * 1000);
+			WriteGBII16(0x1F, 0x0000);
+			WriteGBII16(0x18, 0x8310);
+		}
+	}
+
+	if (wol_enabled == WOL_ENABLED)
+	{
+		WriteGBII16(0x1F, 0x0000);
+		WriteGBII16(0x00, 0x0000);
+		if (mcfg >= CFG_10)
+		{
+			WriteMMIO32(RxConfig, ReadMMIO32(RxConfig) | AcceptBroadcast |
+					AcceptMulticast | AcceptMyPhys);
+		}
+		return;
+	}
+	
+	RTL8100PowerDownPHY();
+
+	switch (mcfg)
+	{
+		case CFG_6:
+		case CFG_9:
+			WriteMMIO8(DBG_reg, ReadMMIO8(DBG_reg) | BIT_3);
+			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
+			break;
+		case CFG_8:
+			pciDev->configWrite8(0x81, 0);
+			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
+			break;
+		case CFG_7:
+		case CFG_10:
+		case CFG_11:
+		case CFG_12:
+		case CFG_13:
+		case CFG_14:
+			WriteMMIO8(PMCH, ReadMMIO8(PMCH) & ~BIT_7);
+			break;
+		default:
+			break;
+	}
 }
 
 // TODO - implement
