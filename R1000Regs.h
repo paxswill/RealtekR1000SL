@@ -531,12 +531,6 @@ enum r1000_register_content {
 
 
 enum _DescStatusBit {
-	// Original R1000 definitions - deprecated
-	//OWNbit	= 0x80000000,
-	//EORbit	= 0x40000000,
-	//FSbit	= 0x20000000,
-	//LSbit	= 0x10000000,
-	
 	DescOwn		= (1 << 31), /* Descriptor is owned by NIC */
 	RingEnd		= (1 << 30), /* End of descriptor ring */
 	FirstFrag	= (1 << 29), /* First segment of a packet */
