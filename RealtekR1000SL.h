@@ -311,6 +311,9 @@ private:
 	static const u32 ethernet_polynomial;
 	
 	static const u16 r1000_intr_mask;
+	static const u16 rtl8101_intr_mask;
+	static const u16 rtl8101_napi_event;
+	static const uint32_t rtl8101_rx_config;
 	static const u16 rtl8168_intr_mask;
 	static const u16 rtl8168_napi_event;
 	static const struct RtlChipInfo rtl_chip_info[];

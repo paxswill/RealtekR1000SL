@@ -32,6 +32,13 @@
 #include "RealtekR1000SL.h"
 #include "impl_defs.h"
 
+/*** Static Initialization ***/
+const u16 RealtekR1000:rtl8101_intr_mask =
+	SYSErr | LinkChg | RxDescUnavail | TxErr | TxOK | RxErr | RxOK;
+const u16 RealtekR1000:rtl8101_napi_event =
+	RxOK | RxDescUnavail | RxFIFOOver | TxOK | TxErr;
+const uint32_t RealtekR1000:rtl8101_rx_config =
+    (Reserved2_data << Reserved2_shift) | (RX_DMA_BURST << RxCfgDMAShift);
 
 // TODO - implement
 void RealtekR1000::RTL8100HwStart()
