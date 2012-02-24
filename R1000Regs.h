@@ -541,6 +541,7 @@ enum _DescStatusBit {
 	LargeSend	= (1 << 27), /* TCP Large Send Offload (TSO) */
 	MSSShift	= 16,        /* MSS value position */
 	MSSMask		= 0xfff,     /* MSS value + LargeSend bit: 12 bits */
+							 /* NOTE: in RTL8168 MSSMask is set to 0x7ffU */
 	TxIPCS		= (1 << 18), /* Calculate IP checksum */
 	TxUDPCS		= (1 << 17), /* Calculate UDP/IP checksum */
 	TxTCPCS		= (1 << 16), /* Calculate TCP/IP checksum */
@@ -643,16 +644,26 @@ struct RxDesc
 	u32		buf_Haddr;
 };
 
+struct ring_info {
+	struct sk_buff	*skb;
+	u32		len;
+	u8		__pad[sizeof(void *) - sizeof(u32)];
+};
+
 // Used only in R1000InitBoard and rtl8168_esd_timer
-struct pci_resource 
-{
-	u16	cmd;
+// (and maybe somewhere in rtl8101)
+struct pci_resource {
+	u8	cmd;
 	u8	cls;
+	u16	io_base_h;
+	u16	io_base_l;
+	u16	mem_base_h;
+	u16	mem_base_l;
 	u8	ilr;
-	u32	io_base;
-	u32	mem_base;
-	u32	resv_0x20;
-	u32	resv_0x24;
+	u16	resv_0x20_h;
+	u16	resv_0x20_l;
+	u16	resv_0x24_h;
+	u16	resv_0x24_l;
 };
 
 //EEPROM opcodes
