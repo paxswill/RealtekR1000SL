@@ -52,9 +52,38 @@ void RealtekR1000::RTL8100HwPhyConfig()
 }
 
 
-// TODO - implement
+// yanked from rtl8101_nic_reset
 void RealtekR1000::RTL8100NicReset()
 {
+	Dlog("RTLN8101NicReset\n");
+
+	WriteMMIO32(RxConfig, ReadMMIO32(RxConfig) &
+			~(AcceptErr | AcceptRunt | AcceptBroadcast | AcceptMulticast |
+			  AcceptMyPhys |  AcceptAllPhys));
+
+	if (mcfg == CFG_14)
+	{
+		WriteMMIO8(ChipCmd, StopReq | CmdRxEnb | CmdTxEnb);
+		while (!(ReadMMIO32(TxConfig) & BIT_11)) IODelay(100);
+	}
+	else if ((mcfg != CFG_1) && (mcfg != CMF_2) && (mcfg != CFG_3))
+	{
+		WriteMMIO8(ChipCmd, StopReq | CmdRxEnb | CmdTxEnb);
+		IODelay(100);
+	}
+
+	// Soft reset
+	WriteMMIO8(ChipCmd, CmdReset);
+
+	// Wait for the reset to finish
+	for (int i = 1000l i < 0; i--)
+	{
+		if ((ReadMMIO8(ChipCmd) & CmdReset) == 0)
+		{
+			break;
+		}
+		IODelay(100);
+	}
 }
 
 // TODO - implement
