@@ -373,6 +373,12 @@ private:
 	int ReadCSI32(int addr);
 	
 	//
+	// ERI Register access
+	// Equivalent to rtl8xxx_eri_{write,read}
+	int WriteERI(int addr, int len, int value, int type);
+	int ReadERI(int addr, int len, int type);
+
+	//
 	// EEPROM access
 	//
 	int rtl_eeprom_type();
@@ -443,6 +449,8 @@ private:
 
 	void RTL8100DSM(int dev_state);
 
+	void RTL8100DisableEEE();
+
 	void RTL8100PowerDownPLL();
 	void RTL8100PowerUpPLL();
 	
@@ -482,10 +490,6 @@ private:
 	void RTL8168PowerDownPHY();
 	void RTL8168PowerUpPHY();
 
-	// Register read/write
-	int RTL8168WriteERI(int addr, int len, int value, int type);
-	int RTL8168ReadERI(int addr, int len, int type);
-	
 	void RTL8168WriteOCP_GPHY(int RegAddr, u16 value);
 	u16 RTL8168ReadOCP_GPHY(int RegAddr);
 
