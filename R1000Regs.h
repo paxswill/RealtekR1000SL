@@ -269,7 +269,7 @@ enum r1000_register_content {
 	TxDescUnavail	= 0x80,
 	RxFIFOOver 	= 0x40,
 	LinkChg 	= 0x20,
-	RxOverflow 	= 0x10,
+	RxOverflow 	= 0x10,	/* Not in either RTL8101 nor RTL8168 */
 	RxDescUnavail = 0x10,
 	TxErr 	= 0x08,
 	TxOK 	= 0x04,
@@ -315,9 +315,9 @@ enum r1000_register_content {
 	/*RxConfigBits*/
 	RxCfgFIFOShift = 13,
 	RxCfgDMAShift = 8,
-	RxCfg_128_int_en = (1 << 15),
-	RxCfg_fet_multi_en = (1 << 14),
-	RxCfg_half_refetch = (1 << 13),
+	RxCfg_128_int_en = (1 << 15),	/* Not in RTL 8101 */
+	RxCfg_fet_multi_en = (1 << 14),	/* Not in RTL 8101 */
+	RxCfg_half_refetch = (1 << 13),	/* Not in RTL 8101 */
 	RxCfg_9356SEL = (1 << 6),
 	
 	/*TxConfigBits*/
@@ -338,12 +338,14 @@ enum r1000_register_content {
 	MagicPacket	= (1 << 5),	/* Wake up when receives a Magic Packet */
 	LinkUp		= (1 << 4),	/* This bit is reserved in RTL8168B.*/
 	/* Wake up when the cable connection is re-established */
+	/* RTL8101 Does has the following four bits in Config5, not Config3 */
 	ECRCEN		= (1 << 3),	/* This bit is reserved in RTL8168B*/
 	Jumbo_En0	= (1 << 2),	/* This bit is reserved in RTL8168B*/
 	RDY_TO_L23	= (1 << 1),	/* This bit is reserved in RTL8168B*/
 	Beacon_en	= (1 << 0),	/* This bit is reserved in RTL8168B*/
 	
 	/* Config4 register */
+	LanWake		= (1 << 1),	/* This bit is only defined in RTL8101 */
 	Jumbo_En1	= (1 << 1),	/* This bit is reserved in RTL8168B*/
 	
 	/* Config5 register */
@@ -352,12 +354,15 @@ enum r1000_register_content {
 	UWF		= (1 << 4),	/* Accept Unicast wakeup frame */
 	LanWake		= (1 << 1),	/* LanWake enable/disable */
 	PMEStatus	= (1 << 0),	/* PME status can be reset by PCI RST# */
+
+	Jumbo_En	= (1 << 2),	/* Only defined for RTL8101 */
 	
 	/* CPlusCmd */
 	EnableBist	= (1 << 15),
 	Macdbgo_oe	= (1 << 14),
 	Normal_mode	= (1 << 13),
 	Force_halfdup	= (1 << 12),
+	Force_halpdup	= (1 << 12),	/* Pretty sure this is a typo in RTL8101 */
 	Force_rxflow_en	= (1 << 11),
 	Force_txflow_en	= (1 << 10),
 	Cxpl_dbg_sel	= (1 << 9),//This bit is reserved in RTL8168B
@@ -365,6 +370,7 @@ enum r1000_register_content {
 	PktCntrDisable	= (1 << 7),
 	RxVlan		= (1 << 6),
 	RxChkSum	= (1 << 5),
+	PCIDAC		= (1 << 4),	/* This is only defined for RTL8101 */
 	Macdbgo_sel	= 0x001C,
 	INTT_0		= 0x0000,
 	INTT_1		= 0x0001,
@@ -372,16 +378,17 @@ enum r1000_register_content {
 	INTT_3		= 0x0003,
 	
 	/*rtl8169_PHYstatus (MAC offset 0x6C)*/
-	TBI_Enable	= 0x80,
+	TBI_Enable	= 0x80,		/* Not defined in RTL8168 not RTL8101 */
 	TxFlowCtrl	= 0x40,
 	RxFlowCtrl	= 0x20,
-	_1000Mbps	= 0x10,		/* Linux _1000bpsF */
+	_1000Mbps	= 0x10,		/* Linux _1000bpsF */ /* Not in RTL8101 */
 	_100Mbps	= 0x08,		/* Linux _100bps */
 	_10Mbps		= 0x04,		/* Linux _10bps */
 	LinkStatus	= 0x02,
 	FullDup		= 0x01,
 	
 	/* DBG_reg */
+	/* These are note defined for RTL8101 */
 	Fix_Nak_1 = (1 << 4),
 	Fix_Nak_2 = (1 << 3),
 	DBGPIN_E2 = (1 << 0),
@@ -396,7 +403,16 @@ enum r1000_register_content {
 	PHYAR_Reg_Mask = 0x1f,
 	PHYAR_Reg_shift = 16,
 	PHYAR_Data_Mask = 0xffff,
-	
+
+	/* Only in RTL8101 */
+	/* PHY IO access */
+	PHYIO_Flag = 0x80000000,
+	PHYIO_Write = 0x80000000,
+	PHYIO_Read = 0x00000000,
+	PHYIO_Reg_Mask = 0x1f,
+	PHYIO_Reg_shift = 16,
+	PHYIO_Data_Mask = 0xffff,
+
 	/* EPHY access */
 	EPHYAR_Flag = 0x80000000,
 	EPHYAR_Write = 0x80000000,
@@ -425,6 +441,7 @@ enum r1000_register_content {
 	ERIAR_ByteEn = 0x0f,
 	ERIAR_ByteEn_shift = 12,
 	
+	/* Not in RTL8101 */
 	/* OCP GPHY access */
 	OCPDR_Write = 0x80000000,
 	OCPDR_Read = 0x00000000,
@@ -435,6 +452,7 @@ enum r1000_register_content {
 	OCPAR_GPHY_Write = 0x8000F060,
 	OCPAR_GPHY_Read = 0x0000F060,
 	
+	/* Not in RTL8101 */
 	/* E-FUSE access */
 	EFUSE_WRITE	= 0x80000000,
 	EFUSE_WRITE_OK	= 0x00000000,
@@ -448,7 +466,9 @@ enum r1000_register_content {
 	
 	/* GPIO */
 	GPIO_en = (1 << 0),	
-		
+	
+	/* Obviously, RTL8101 does not support _any_ of the Gigabit registers */
+
 	/*GIGABIT_PHY_registers*/
 	PHY_BMCR			= 0,	/* Linux MII_BMCR */
 	PHY_BMSR			= 1,	/* Linux MII_BMSR */
