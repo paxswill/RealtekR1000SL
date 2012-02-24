@@ -219,6 +219,24 @@ void RealtekR1000::RTL8100PowerDownPLL()
 // Taken from rtl8101_powerdown_pll
 void RealtekR1000::RTL8100PowerUpPLL()
 {
+	switch (mcfg)
+	{
+		case MCFG_8103E_1:
+		case MCFG_8401_1:
+			WriteMMIO8(PMCH, ReadMMIO8(PMCH) | BIT_7);
+			WriteMMIO8(DBG_reg, ReadMMIO8(DBG_reg) & ~BIT_3);
+			break;
+		case MCFG_8103E_2:
+		case MCFG_8103E_3:
+		case MCFG_8105E_1:
+		case MCFG_8105E_2:
+		case MCFG_8105E_3:
+		case MCFG_8105E_4:
+		case MCFG_8401_1:
+			WriteMMIO8(PMCH, ReadMMIO8(PMCH) | BIT_7);
+			break;
+	}
+	RTL8100PowerUpPHY();
 }
 
 
