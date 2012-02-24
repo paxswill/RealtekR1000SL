@@ -1065,6 +1065,9 @@ IOReturn RealtekR1000::setMulticastMode(bool enableIt)
  */
 // Copied logic from rtl8168_set_rx_mode
 // FIXME - verify this is correct for all chips
+// rtl8168_set_rx_mode now has a slightly different last bit,
+// but rtl8101_set_rx_mode is (as far as I can tell) functionally
+// identical to this.
 IOReturn RealtekR1000::setMulticastList(IOEthernetAddress *addrs, UInt32 count)
 {
 	DLog("setMulticastList(count=%u)\n", count);
