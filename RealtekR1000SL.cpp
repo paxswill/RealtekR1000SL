@@ -1784,12 +1784,9 @@ void RealtekR1000::R1000GetMacVersion()
 			break;
 
 		case 0x24000000:
-			if (ICVerID == 0x00100000)
-				mcfg = MCFG_8401_1;
-			else
-				mcfg = MCFG_8401_1;
+			mcfg = MCFG_8401_1;
 			break;
-			
+
 		case 0x24800000:
 		case 0x34800000:
 			if (ICVerID == 0x00100000)
@@ -1800,11 +1797,12 @@ void RealtekR1000::R1000GetMacVersion()
 				mcfg = MCFG_8103E_1;
 			else if (ICVerID == 0x00500000)
 				mcfg = MCFG_8103E_2;
+			else if (ICVerID == 0x00600000)
+				mcfg = MCFG_8103E_3;
 			else
-				mcfg = MCFG_8103E_2;
+				mcfg = MCFG_8103E_3;
 			break;
-			
-			
+
 		case 0x28000000:
 			if(ICVerID == 0x00100000) {
 				mcfg = MCFG_8168D_1;
@@ -1816,7 +1814,33 @@ void RealtekR1000::R1000GetMacVersion()
 			break;
 			
 		case 0x28800000:
-			mcfg = MCFG_8168DP_1;
+			if (ICVerID == 0x00100000) {
+				mcfg = MCFG_8168DP_1;
+			} else if (ICVerID == 0x00200000) {
+				mcfg = MCFG_8186DP_2;
+				WriteMMIO32(0xD0, ReadMMIO32(0xD0) | 0x00020000)l
+			} else {
+				mcfg = MCFG_8186DP_3;
+			}
+			break;
+
+		case 0x2C000000:
+			// Note: Both R8101 and R8168 use this value.
+			// Because the R8101 does not specify an ICVerID to check, it will
+			// be the terminal case
+			if (ICVerID == 0x00100000)
+				mcfg = MCFG_8168E_1
+			else if (ICVerID == 0x00200000)
+				mcfg = MCFG_8168E_2;
+			else
+				mcfg = MCFG_8105E_1;
+			break;
+
+		case 0x2C800000:
+			if (ICVerID == 0x00000000)
+				mcfg = MCFG_8168E_VL_1;
+			else if (ICVerID == 0x00100000)
+				mcfg = MCFG_8186E_VL_2;
 			break;
 
 		case 0x30000000:
@@ -1872,6 +1896,30 @@ void RealtekR1000::R1000GetMacVersion()
 			} else {
 				mcfg = MCFG_8168CP_2;
 			}
+			break;
+
+		case 0x40800000:
+			if (ICVerID == 0x00100000)
+				mcfg = MCFG_8105E_2;
+			else if (ICVerID == 0x00200000)
+				mcfg = MCFG_8105E_3;
+			else if (ICVerID == 0x00300000 || ICVerID == 0x00400000)
+				mcfg = MCFG_8105E_4;
+			break;
+
+		case 0x44000000:
+			mcfg = MCFG_8402_1;
+			break;
+
+		case 0x48000000:
+			if (ICVerID == 0x00000000)
+				mcfg = MCFG_8168F_1;
+			else if (ICVerID == 0x00100000)
+				mcfg = MCFG_8186F_2;
+			break;
+
+		case 0x48800000:
+			mcfg = MCFG_8411_1;
 			break;
 			
 		case 0x98000000:
