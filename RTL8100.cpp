@@ -99,8 +99,52 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 
 // TODO Add this to the private interface
 // To save you a hard search, EEE stands for Energy Effcient Ethernet
-void RealtekR1000:RTL8100DisableEEE(void)
+void RealtekR1000:RTL8100DisableEEE()
 {
+	switch (mcfg)
+	{
+		case CFG_11:
+		case CFG_12:
+		case CFG_13:
+			WriteERI(0x1B0, 2, 0, ERIAR_ExGMAC);
+			WriteGMII16(0x1F, 0x0004);
+			WriteGMII16(0x10, 0x401F);
+			WriteGMII16(0x19, 0x7030);
+
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(0x0D, 0x0007);
+			WriteGMII16(0x0E, 0x003C);
+			WriteGMII16(0x0D, 0x4007);
+			WriteGMII16(0x0E, 0x0000);
+			WriteGMII16(0x0D, 0x0000);
+
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(0x0D, 0x0003);
+			WriteGMII16(0x0E, 0x0015);
+			WriteGMII16(0x0D, 0x4003);
+			WriteGMII16(0x1E, 0x0000);
+			WriteGMII16(0x1D, 0x0000);
+
+			WriteGMII16(MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
+			break;
+		case CFG_14:
+			WriteERI(0x1B0, 2, 0, ERIAR_ExGMAC);
+			WriteGMII16(0x1F, 0x0004);
+			WriteGMII16(0x10, 0x401F);
+			WriteGMII16(0x19, 0x7030);
+
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(0x0D, 0x0007);
+			WriteGMII16(0x0E, 0x003C);
+			WriteGMII16(0x0D, 0x4007);
+			WriteGMII16(0x0E, 0x0000);
+			WriteGMII16(0x0D, 0x0000);
+
+			WriteGMII16(MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
+			break;
+		default:
+			DLog("RTL8100DisableEEE called on an unsupported chip.\n");
+	}
 }
 
 
