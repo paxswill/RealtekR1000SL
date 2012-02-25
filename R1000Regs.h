@@ -412,7 +412,7 @@ enum r1000_register_content {
 	FullDup		= 0x01,
 	
 	/* DBG_reg */
-	/* These are note defined for RTL8101 */
+	/* These are not defined for RTL8101 */
 	Fix_Nak_1 = (1 << 4),
 	Fix_Nak_2 = (1 << 3),
 	DBGPIN_E2 = (1 << 0),
