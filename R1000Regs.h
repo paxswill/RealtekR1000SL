@@ -213,11 +213,6 @@ enum mcfg_methods
 #define MCFG_IS_8168(cfg) (((cfg >= MCFG_8168B_1) && (cfg <= MCFG_8168F_2)) || (cfg == MCFG_8411_1))
 #define MCFG_IS_8169(cfg) ((cfg >= MCFG_8169_1) && (cfg <= MCFG_8169SC_2))
 
-	//
-	// RTL8168 series
-	//
-	MCFG_8411_1,	// 8168 CFG_METHOD_20
-
 enum R1000_DSM_STATE
 {
 	DSM_MAC_INIT = 1,
