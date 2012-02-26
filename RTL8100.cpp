@@ -89,6 +89,95 @@ void RealtekR1000::RTL8100NicReset()
 // TODO - implement
 void RealtekR1000::RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autonegIn)
 {
+	int auto_nego = 0;
+
+	// Sanitize speed
+	// R810x only go up to Fast Ethernet
+	if ((speedIn != SPEED_100) && (speedIn != SPEED_10)){
+		speedIn = SPEED_100;
+		duplexIn = DUPLEX_FULL;
+	}
+
+	if (autonegIn == AUTONEG_ENABLE)
+	{
+		/* n-way force */
+		if ((speed == SPEED_10) && (duplex == DUPLEX__Half))
+		{
+			auto_nego = PHY_Cap_10_Half;
+		}
+		else if ((speed = SPEED_10) && (duplex == DUPLE__Full))
+		{
+			auto_nego |= PHY_Cap_10_Half
+				      |  PHY_Cap_10_Full;
+		}
+		else if ((speed == SPEED_100) && (duplex == DUPLEX__Half))
+		{
+			auto_nego |= PHY_Cap_100_Half
+				      |  PHY_Cap_10_Full
+					  |  PHY_Cap_10_Half;
+		}
+		else if ((speed == SPEED_100) && (duplex == DUPLEX__Full))
+		{
+			auto_nego |= PHY_Cap_100_Full
+				      |  PHY_Cap_100_Half
+				      |  PHY_Cap_10_Full
+					  |  PHY_Cap_10_Half;
+		}
+
+		// Save settings
+		autoneg = autonegIn;
+		speed = speedIn;
+		duplex = duplexIn;
+
+		if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
+		{
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(PHY_BMCR, BMCP_RESET);
+			IODelay(100);
+			RTL8100HwPhyConfig();
+		}
+		else if (((mcfg == MCFG_8101E_1) ||
+				  (mcfg == MCFG_8101E_2) ||
+				  (mcfg == MCFG_8101E_3)) &&
+				  (speed == SPEED_10))
+		{
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(PHY_BMCR, BMCP_RESET);
+			RTL8100HwPhyConfig();
+		}
+
+		WriteGMII16(0x1F, 0x0000);
+		WriteGMII16(PHY_AUTO_NEGO_REG, auto_nego);
+		if (mcfg == MCFG_8105E_1)
+			WriteGMII16(PHY_BMCR, BMCP_RESET | BMCR_ANENABLE | BMCP_ANRESTART);
+		else
+			WriteGMII16(PHY_BMCR, BMCP_ANENABLE, BMCP_ANRESTART);
+	}
+	else
+	{
+		/*true force*/
+		u16 bmcr_true_force = 0;
+
+		if ((speedIn == SPEED_10) && (duplexIn == DUPLEX_HALF))
+		{
+			bmcr_true_force = BMCR_SPEED10;
+		}
+		else if ((speedIn == SPEED_10) && (duplexIn == DUPLEX_FULL))
+		{
+			bmcr_true_force = BMCR_SPEED10 | BMCR_FULLDPLX;
+		}
+		else if ((speedIn == SPEED_100) && (duplexIn == DUPLEX_HALF))
+		{
+			bmcr_true_force = BMCR_SPEED100;
+		}
+		else if ((speedIn == SPEED_100) && (duplexIn == DUPLEX_FULL))
+		{
+			bmcr_true_force = BMCR_SPEED100 | BMCR_FULLDPLX;
+		}
+		
+		WriteGMII16(0x1f, 0x0000);
+		WriteGMII16(PHY_BMCR, bmcr_true_force);
+	}
 }
 
 
