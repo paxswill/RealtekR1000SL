@@ -1607,10 +1607,18 @@ void RealtekR1000::WriteCSI32(int addr,
 							  int value)
 {
 	WriteMMIO32(CSIDR, value);
+	
+	u32 cmd = CSIAR_Write | CSIAR_ByteEn << CSIAR_ByteEn_shift |
+		(addr & CSIAR_Addr_Mask);
 	WriteMMIO32(CSIAR, 
 				CSIAR_Write |
 				CSIAR_ByteEn << CSIAR_ByteEn_shift |
 				(addr & CSIAR_Addr_Mask));
+
+	if (mfcg == MFCG_8402_1 || mfcg == MFCG_8411_1)
+	{
+		cmd |= 0x00020000;
+	}
 	
 	for (int i = 0; i < 10; i++)
 	{
@@ -1620,6 +1628,7 @@ void RealtekR1000::WriteCSI32(int addr,
 		if (!(ReadMMIO32(CSIAR) & CSIAR_Flag)) 
 			break;
 	}
+	IODelay(20);
 	return;
 }
 
@@ -1628,10 +1637,13 @@ int RealtekR1000::ReadCSI32(int addr)
 {
 	int value = -1;
 	
-	WriteMMIO32(CSIAR, 
-				CSIAR_Read | 
-				CSIAR_ByteEn << CSIAR_ByteEn_shift |
-				(addr & CSIAR_Addr_Mask));
+	u32 cmd = CSIAR_Read, CSIAR_ByteEn << CSIAR_ByteEn_shift |
+		(addr & CSIAR_Addr_Mask);
+
+	if (mfcg == MFCG_8402_1 || mfcg == MFCG_8411_1)
+		cmd |= 0x00020000;
+
+	WriteMMIO32(CSIAR, cmd);
 	
 	for (int i = 0; i < 10; i++)
 	{
@@ -1644,6 +1656,7 @@ int RealtekR1000::ReadCSI32(int addr)
 			break;
 		}
 	}
+	IODelay(20);
 	return value;
 }
 
