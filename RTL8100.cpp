@@ -66,7 +66,7 @@ void RealtekR1000::RTL8102EHwStart()
 	if (mcfg == MCFG_8102E_1)
 	{
 	/* set PCI configuration space ossfet 0x70F to 0x17 */
-		u16 csi_tmp = ReadCSI32(0x70C);
+		u32 csi_tmp = ReadCSI32(0x70C);
 		WriteCSI32(0x70C, csi_tmp | 0x17000000);
 	}
 
@@ -172,6 +172,176 @@ void RealtekR1000::RTL8102EHwStart()
 		break;
 	default:
 		break;
+	}
+}
+
+void RealtekR1000::RTL8105EHwStart1()
+{
+	/* Set PCI configuration space offset 0x70F to 0x27 */
+	u32 csi_tmp = ReadCSI32(0x70C) & 0x00FFFFFF;
+	WriteCSI32(0x70C, csi_tmp | 0x27000000);
+
+	// I don't know how to do this in OS X...
+	/*
+	tp->cp_cmd &= 0x2063;
+	*/
+
+	WriteMMIO8(ETThReg, 0x0C);
+
+	/* Set CPI config offset 0x79 to 0x50 */
+	pciDev-writeConfig8(0x79, 0x50);
+
+	/* TODO Enable tx checksum offload */
+	
+	WriteMMIO8(0xF3, ReadMMIO8(0xF3) | BIT_5);
+	WriteMMIO8(0xF3, ReadMMIO8(0xF3) & ~BIT_5);
+
+	WriteMMIO8(0xD0, ReadMMIO8(0xD0) | 0xC0);
+	WriteMMIO8(0xD0, ReadMMIO8(0xD0) | 0xC6);
+
+	WriteMMIO8(Config5, (ReadMMIO8(Config5) & ~0x08) | BIT_0);
+	WriteMMIO8(Config2, ReadMMIO8(Config2) | BIT_7);
+
+	WriteMMIO8(Config3, ReadMMIO8(Config3) & ~Beacon_en);
+	
+	/* Set EPHY registers */
+	u16 data16;
+
+	data16 = ReadEPHY16(0x00) & ~ 0x0200;
+	data16 |= 0x100;
+	WriteEPHY16(0x00, data16);
+
+	data16 = ReadEPHY16(0x00);
+	data16 |= 0x0004;
+	WriteEPHY16(0x00, data16);
+
+	data16 = ReadEPHY16(0x06) & ~0x0002;
+	data16 |= 0x0001;
+	WriteEPHY16(0x06, data16);
+
+	data16 = ReadEPHY16(0x06);
+	data16 |= 0x0030;
+	WriteEPHY16(0x06, data16);
+
+	data16 = ReadEPHY16(0x07);
+	data16 |= 0x2000;
+	WriteEPHY16(0x07, data16);
+
+	data16 = ReadEPHY16(0x00);
+	data16 |= 0x0020;
+	WriteEPHY16(0x00, data16);
+
+	data16 = ReadEPHY16(0x03) & ~0x5800;
+	data16 |= 0x2000;
+	WriteEPHY16(0x03, data16);
+
+	data16 = ReadEPHY16(0x03);
+	data16 |= 0x0001;
+	WriteEPHY16(0x03, data16);
+
+	data16 = ReadEPHY16(0x01) & ~0x0800;
+	data16 |= 0x1000;
+	WriteEPHY16(0x01, data16);
+
+	data16 = ReadEPHY16(0x07);
+	data16 |= 0x4000;
+	WriteEPHY16(0x07, data16);
+
+	data16 = ReadEPHY16(0x1E);
+	data16 |= 0x2000;
+	WriteEPHY16(0x1E, data16);
+
+	WriteEPHY16(0x19, 0xFE6C);
+
+	data16 = ReadEPHY16(0x0A);
+	data16 |= 0x0040;
+	WriteEPHY16(0x0A, data16);
+}
+
+void RealtekR1000::RTL8105EHwStart()
+{
+	u8 pci_config;
+	/* what is the analog to tp->cp_cmd in OS X? */
+	//tp->cmd &= 0x2063
+
+	/* TODO enable chesksum offload */
+
+	pci_config = pciDev->readConfig8(0x80);
+	if (pci_config & 0x03)
+	{
+		WriteMMIO8(Config5, ReadMMIO8(Config5) | BIT_0);
+		WriteMMIO8(0xF2, ReadMMIO8(0xF2) | BIT_7);
+		WriteMMIO8(0xF1, ReadMMIO8(0xF1) | BIT_7);
+		WriteMMIO8(Config2, ReadMMIO8(Config2) | Bit_7);
+	}
+
+	WriteMMIO8(0xF1, ReadMMIO8(0xF1) | BIT_5 | BIT_3);
+	WriteMMIO8(0xF2, ReadMMIO8(0xF2) & ~BIT_0);
+	WriteMMIO8(0xD3, ReadMMIO8(0xD3) | BIT_3 | BIT_2);
+	WriteMMIO8(0xD0, ReadMMIO8(0xD0) | BIT_6);
+	WriteMMIO16(0xE0, ReadMMIO16(0xE0) & ~0xDF9C);
+
+	data16 = ReadEPHY16(0x07);
+	data16 |= 0x4000;
+	WriteEPHY16(0x07, data16);
+
+	data16 = ReadEPHY16(0x19);
+	data16 |= 0x0200;
+	WriteEPHY16(0x19, data16);
+
+	data16 = ReadEPHY16(0x19);
+	data16 |= 0x0020;
+	WriteEPHY16(0x19, data16);
+
+	data16 = ReadEPHY16(0x1E);
+	data16 |= 0x2000;
+	WriteEPHY16(0x1E, data16);
+
+	data16 = ReadEPHY16(0x03);
+	data16 |= 0x0001;
+	WriteEPHY16(0x03, data16);
+
+	data16 = ReadEPHY16(0x19);
+	data16 |= 0x0100;
+	WriteEPHY16(0x19, data16);
+
+	data16 = ReadEPHY16(0x19);
+	data16 |= 0x0004;
+	WriteEPHY16(0x19, data16);
+
+	data16 = ReadEPHY16(0x0A);
+	data16 |= 0x0020;
+	WriteEPHY16(0x0A, data16);
+
+	if (mcfg == MCFG_8105E_2)
+	{
+		WriteMMIO8(Config5, ReadMMIO8(Config5) & ~BIT_0);
+	}
+	else if (mcfg == MCFG_8105E_3 || mcfg == MCFG_8105E_4)
+	{
+		data16 = ReadEPHY16(0x1E);
+		data16 |= 0x8000;
+		WriteEPHY16(0x1E, data16);
+	}
+
+	if (mcfg == MCFG_8105E_4)
+	{
+		unsigned long flags;
+		if ((ReadMMIO8(0x8C) & BIT_28) && !(ReadMMIO8(0xEF) & BIT_2))
+		{
+			WriteGMII16(0x1F, 0x0005);
+			data16 = ReadGMII16(0x1A);
+			data16 &= ~(BIT_8 | BIT_0);
+			WriteGMII16(0x0A, data16);
+			WriteGMII16(0x1F, 0x0000);
+		}
+		else if (ReadMMIO8(0xEF) & BIT_2)
+		{
+			WriteGMII16(0x1F, 0x0001);
+			data16 = ReadGMII16(0x1B) | BIT_2;
+			WriteGMII16(0x1B, data16);
+			WriteGMII16(0x1F, 0x0000);
+		}
 	}
 }
 
