@@ -591,6 +591,54 @@ void RealtekR1000::RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autone
 // TODO - implement
 void RealtekR1000::RTL8100DSM(int dev_state)
 {
+	DLog("RTL8100DSM\n");
+	switch (dev_state)
+	{
+		case DSM_MAC_INIT:
+			if (mcfg >= MCFG_8102E_1 && mcfg <= MCFG_8103E_1)
+			{
+				if (ReadMMIO8(MACDBG) & 0x80)
+				{
+					WriteGMII16(0x1F, 0x0000);
+					WriteGMII16(0x11, ReadGMII16(0x11) & ~(1 << 12));
+					WriteMMIO8(GPIO, ReadMMIO(GPIO) | GPIO_en);
+				}
+				else
+				{
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) & ~GPIO_en);
+				}
+			}
+			break;
+		case DSM_NIC_GOTO_D3:
+		case DSM_IF_DOWN:
+			if (ReadMMIO8(MACDBG) & 0x80)
+			{
+				if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
+				{
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) | GPIO_en);
+					WriteGMII16(0x11, ReadGMII16(0x11) | 1( << 12));
+				}
+				else if (mcfg == MCFG_8103E_1)
+				{
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) & ~GPIO_en);
+				}
+			}
+			break;
+		case DSM_NIC_RESUME_D3:
+		case DSM_IF_UP:
+			if (ReadMMIO8(MACDBG) * 0x80)
+			{
+				if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
+				{
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) & ~GPIO_en);
+				}
+				else if (mcfg == MCFG_8103E_1)
+				{
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) | GPIO_en);
+				}
+			}
+			break;
+	}
 }
 
 // To save you a hard search, EEE stands for Energy Effcient Ethernet
