@@ -113,7 +113,8 @@ void RealtekR1000::RTL8102EHwStart()
 		WriteMMIO8(Config1, 0x0F);
 		WriteMMIO8(Config3, ReadMMIO8(Config3) & ~Beacon_en);
 	}
-	else if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2)
+	else if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2 ||
+			 mcfg == MCFG_8401_1)
 	{
 		WriteMMIO8(0xF4, 0x01);
 	}
@@ -122,18 +123,20 @@ void RealtekR1000::RTL8102EHwStart()
 		WriteMMIO8(0xF4, ReadMMIO8(0xF4) | BIT_0);
 	}
 
-	// In the original source, there's a lot of bit shifts to get 0xDF98
+	// In the original source, there's a lot of bit shifts to get 0xDF9{8,C}
 	if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2 ||
 	    mcfg == MCFG_8013E_1)
 	{
 		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF98);
 	}
-	else if(mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3)
+	else if(mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3 ||
+	        mcfg == MCFG_8401)
 	{
 		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF9C);
 	}
 
-	if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3)
+	if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3 ||
+	    mcfg == MCFG_8401_1)
 	{
 		WriteMMIO8(Config3, ReadMMIO8(Config3) & ~Beacon_en);
 	}
@@ -162,6 +165,10 @@ void RealtekR1000::RTL8102EHwStart()
 		WriteEPHY16(0x03, 0x05D9);
 		WriteEPHY16(0x06, 0xAF35);
 		WriteEPHY16(0x19, 0xECFA);
+		break;
+	case MCFG_8401_1:
+		WriteEPHY16(0x06, 0xAF25);
+		WriteEPHY16(0x07, 0x8E68);
 		break;
 	default:
 		break;
