@@ -783,12 +783,21 @@ void RealtekR1000::RTL8100PowerUpPLL()
 }
 
 
-// TODO - implement
 void RealtekR1000::RTL8100PowerDownPHY()
 {
+	WriteMGII16(0x1F, 0x0000);
+	if (mcfg == MCFG_8105E_1)
+	{
+		WriteGMII16(PHY_BMCR, BMCR_ANENABLE | BMCR_PDOWN);
+	}
+	else
+	{
+		WriteGMII16(PHY_BMCR, BMCR_PDOWN);
+	}
 }
 
-// TODO - implement
 void RealtekR1000::RTL8100PowerUpPHY()
 {
+	WriteGMII16(0x1F, 0x0000);
+	WriteGMII16(PHY_BMCR, BMCR_ANENABLE);
 }
