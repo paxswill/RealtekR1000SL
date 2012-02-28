@@ -43,7 +43,131 @@ const uint32_t RealtekR1000:rtl8101_rx_config =
 // TODO - implement
 void RealtekR1000::RTL8100HwStart()
 {
+	RTL8100NicReset();
+	// TODO rtl8101_set_rxbufsize(tp, dev);
+	WriteMMIO8(Cfg9346, Cfg9346_Unlock);
+
+	/* Set DMA burst size and Interframe Gap Time */
+	WriteMMIO32(TxConfig, (TX_DMA_BURST << TxDMAShift) |
+			(InterFrameGap << TxInterFrameGapShift));
+
+	// Chip specific initializations
+	if (mcfg == MCFG_8102E_1)
+	{
+		RTL8100EHwStart();
+	}
 }
+
+// TODO: Add to interface
+void RealtekR1000::RTL8102EHwStart()
+{
+	u8 link_control, device_control;
+
+	if (mcfg == MCFG_8102E_1)
+	{
+	/* set PCI configuration space ossfet 0x70F to 0x17 */
+		u16 csi_tmp = ReadCSI32(0x70C);
+		WriteCSI32(0x70C, csi_tmp | 0x17000000);
+	}
+
+	link_control = pciDev->configRead8(0x81);
+	if (link_control == 1)
+	{
+		pciDev->configWrite8(0x81, 0);
+		WriteMMIO8(DBG_reg, 0x98);
+		WriteMMIO8(Config2, ReadMMIO8(Config2) | BIT_7);
+		WriteMMIO8(Config4, ReadMMIO8(Config4) | BIT_2);
+		if (mcfg == MCFG_8103E_3)
+		{
+			WriteMMIO8(0xF4, ReadMMIO8(0xF4) | BIT_3);
+			WriteMMIO8(0xF5, ReadMMIO8(0xF5) | BIT_2);
+		}
+		pciDev->configWrite8(0x81, 1);
+		if (mcfg == MCFG_8013E_3)
+		{
+			if (ReadEPHY16(0x10) == 0x0008)
+			{
+				WriteEPHY16(0x10, 0x000C);
+			}
+		}
+	}
+
+	if (mcfg == MCFG_8103E_3)
+	{
+		link_control = pciDev->configRead8(0x80);
+		if (link_control & 3)
+		{
+			WriteEPHY16(0x02, 0x011F);
+		}
+	}
+
+	// Set PCI COnfig offset to 0x70 to 0x50
+	/* Increase Tx performance */
+	device_control = pciDev->configRead8(0x79);
+	device_control &= ~0x70;
+	device_control |= 0x50;
+	pciDev->configWrite8(0x79, device_control);
+
+	if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
+	{
+		WriteMMIO8(Config1, 0x0F);
+		WriteMMIO8(Config3, ReadMMIO8(Config3) & ~Beacon_en);
+	}
+	else if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2)
+	{
+		WriteMMIO8(0xF4, 0x01);
+	}
+	else if (mcfg == MCFG_8103E_3)
+	{
+		WriteMMIO8(0xF4, ReadMMIO8(0xF4) | BIT_0);
+	}
+
+	// In the original source, there's a lot of bit shifts to get 0xDF98
+	if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2 ||
+	    mcfg == MCFG_8013E_1)
+	{
+		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF98);
+	}
+	else if(mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3)
+	{
+		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF9C);
+	}
+
+	if (mcfg == MCFG_8103E_1 || mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3)
+	{
+		WriteMMIO8(Config3, ReadMMIO8(Config3) & ~Beacon_en);
+	}
+
+	//E-PHY config
+	switch (mcfg){
+	case MCFG_8102E_1:
+		WriteEPHY(0x03, 0xC2F9);
+		break;
+	case MCFG_8102E_2:
+		WriteEPHY16(0x01, 0x6FE5);
+		WriteEPHY16(0x03, 0xD7D9);
+		break;
+	case MCFG_8103E_1:
+		WriteEPHY16(0x06, 0xAF35);
+		break;
+	case MCFG_8103E_2:
+		WriteMMIO8(0xF5, ReadMMIO8(0xF5) | BIT_2);
+		WriteEPHY16(0x19, 0xEC90);
+		WriteEPHY16(0x01, 0x6FE5);
+		WriteEPHY16(0x03, 0x05D9);
+		WriteEPHY16(0x06, 0xAF35);
+		break;
+	case MCFG_8103E_3:
+		WriteEPHY16(0x01, 0x6FE5);
+		WriteEPHY16(0x03, 0x05D9);
+		WriteEPHY16(0x06, 0xAF35);
+		WriteEPHY16(0x19, 0xECFA);
+		break;
+	default:
+		break;
+	}
+}
+
 
 
 // TODO - implement
