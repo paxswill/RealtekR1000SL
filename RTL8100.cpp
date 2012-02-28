@@ -39,6 +39,8 @@ const u16 RealtekR1000:rtl8101_napi_event =
 	RxOK | RxDescUnavail | RxFIFOOver | TxOK | TxErr;
 const uint32_t RealtekR1000:rtl8101_rx_config =
     (Reserved2_data << Reserved2_shift) | (RX_DMA_BURST << RxCfgDMAShift);
+// Enable/Disable Energy Effcient Ethernet
+static int eee_enable = 0;
 
 // TODO - implement
 void RealtekR1000::RTL8100HwStart()
@@ -52,13 +54,91 @@ void RealtekR1000::RTL8100HwStart()
 			(InterFrameGap << TxInterFrameGapShift));
 
 	// Chip specific initializations
-	if (mcfg == MCFG_8102E_1)
+	u16 cplus_cmd = 0
+	if ((mcfg >= MCFG_8102E_1 && mcfg <= MCFG_8103E_3) || mcfg == MCFG_8401_1)
 	{
-		RTL8100EHwStart();
+		RTL8100EHwStart1Gen();
+	}
+	else if (mcfg == MCFG_8105E_1)
+	{
+		RTL8105EHwStart1();
+		cplus_cmd &= 0x2063;
+	}
+	else if (mcfg >= MCFG_8105E_2 && mcfg <= MCFG_8105E_4)
+	{
+		RTL8105EHwStart();
+		cplus_cmd &= 0x2063;
+	}
+	else if (mcfg == MCFG_8402_1)
+	{
+		RTL8402HwStart();
+	}
+
+	WriteMMIO8(ETThReg, Reserved1_data);
+
+	// I'm a little dubious that this needs to be done
+	WriteMMIO16(CPlusCmd, cplus_cmd);
+
+	/* Undocumented corner */
+	WriteMMIO16(IntrMitigate, 0x0000);
+
+	WriteMMIO32(TxDescStartAddr, static_cast<UInt32>(txdesc_phy_dma_addr));
+	WriteMMIO32(TxDescStartAddr + 4, static_cast<UInt32>(txdesc_phy_dma_addr >> 32));
+	WriteMMIO32(RxDescStartAddr, static_cast<UInt32>(rxdesc_phy_dma_addr));
+	WriteMMIO32(RxDescStartAddr + 4, static_cast<UInt32>(rxdesc_phy_dma_addr >> 32));
+
+	// Set Rx Config register
+	// TODO set the rx config register properly
+	WriteMMIO32(RxConfig,
+			~(AcceptErr | AcceptRunt | AcceptBroadcast | AcceptMulticast |
+			AcceptMyPhys | AcceptAllPhys) & (rx_config_base |
+			(ReadMMIO32(RxConfig) & rx_config_mask)));
+
+	// Clear interrupt register
+	WriteMMIO16(IntrStatus, 0xFFFF);
+
+	if (mcfg >= MCFG_8101E_1 && mcfg <= MCFG_8101E_3)
+	{
+		tx_tcp_csum_cmd = TxIPCS | TxTCPCS;
+		tx_udp_csum_cmd = TxIPCS | TxUDPCS;
+		tx_ip_csum_cmd  = TxIPCS;
+	}
+	else
+	{
+		tx_tcp_csum_cmd = TxIPCS_C | TxTCPCS_C;
+		tx_udp_csum_cmd = TxIPCS_C | TxUDPCS_C;
+		tx_ip_csum_cmd = TxIPCS_C;
+	}
+
+	// Enable all known interrupts
+	WriteMMIO16(IntrMask, rtl8101_intr_mask);
+
+	WriteMMIO8(Cfg9346, Cfg9346_Lock);
+
+	RTL8100DSM(DSM_MAC_INIT);
+
+	u8 options1 = ReadMMIO8(Config3);
+	u8 options2 = ReadMMIO8(Config5);
+	if ((options1 & LinkUp) || (options1 & MagicPacket) ||
+		(options2 & UWD) || (options2 & BWF) || ( options2 & MWF))
+	{
+		wol_enabled = WOL_ENABLED;
+	}
+	else
+	{
+		wol_enabled = WOL_DISABLED;
+	}
+
+	if (eee_enable == 1)
+	{
+		RTL8100EEEEnable();
+	}
+	else
+	{
+		RTL8100EEEDisable();
 	}
 }
 
-// TODO: Add to interface
 void RealtekR1000::RTL8100HwStart1Gen()
 {
 	u8 link_control, device_control;
@@ -181,11 +261,6 @@ void RealtekR1000::RTL8105EHwStart1()
 	u32 csi_tmp = ReadCSI32(0x70C) & 0x00FFFFFF;
 	WriteCSI32(0x70C, csi_tmp | 0x27000000);
 
-	// I don't know how to do this in OS X...
-	/*
-	tp->cp_cmd &= 0x2063;
-	*/
-
 	WriteMMIO8(ETThReg, 0x0C);
 
 	/* Set CPI config offset 0x79 to 0x50 */
@@ -261,8 +336,6 @@ void RealtekR1000::RTL8105EHwStart1()
 void RealtekR1000::RTL8105EHwStart()
 {
 	u8 pci_config;
-	/* what is the analog to tp->cp_cmd in OS X? */
-	//tp->cmd &= 0x2063
 
 	/* TODO enable chesksum offload */
 
@@ -520,7 +593,6 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 {
 }
 
-// TODO Add this to the private interface
 // To save you a hard search, EEE stands for Energy Effcient Ethernet
 void RealtekR1000:RTL8100DisableEEE()
 {
