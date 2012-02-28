@@ -442,6 +442,12 @@ private:
 	// RTL8100
 	//
 	void RTL8100HwStart();
+	// Chip specific subroutines
+	void RTL8100HwStart1Gen();
+	void RTL8105EHwStart1();
+	void RTL8105EHwStart();
+	void RTL8401HwStart();
+
 	void RTL8100HwPhyConfig();
 	void RTL8100NicReset();
 	

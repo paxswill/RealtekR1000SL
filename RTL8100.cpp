@@ -59,7 +59,7 @@ void RealtekR1000::RTL8100HwStart()
 }
 
 // TODO: Add to interface
-void RealtekR1000::RTL8102EHwStart()
+void RealtekR1000::RTL8100HwStart1Gen()
 {
 	u8 link_control, device_control;
 
@@ -345,6 +345,39 @@ void RealtekR1000::RTL8105EHwStart()
 	}
 }
 
+void RealtekR1000::RTL8402HwStart()
+{
+	u8 device_control;
+
+	u32 csi_tmp = ReadCSI32(0x70C) & 0x00FFFFFF;
+	WriteCSI32(0x70C, csi_tmp | 0x17000000);
+
+	/* Set PCI config space offset 0x70 to 0x50 */
+	device_control = pciDev->configRead8(0x79);
+	device_control &= ~0x70;
+	device_control |= 0x50;
+	pciDev->configWrite8(0x79, device_control);
+
+	WriteERI(0xC8, 4, 0x00000002, ERIAR_ExGMAC);
+	WriteERI(0xE8, 4, 0x00000006, ERIAR_ExGMAC);
+
+	WriteMMIO32(TxConfig, ReadMMIO32(TxConfig) | BIT_7);
+	WriteMMIO8(0xD3, ReadMMIO8(0xD3), & ~BIT_7);
+	csi_tmp = ReadERI(0xDC, 1, ERIAR_ExGMAC);
+	csi_tmp &= ~BIT_0;
+	WriteERI(0xDC, 1, csi_tmp, ERIAR_ExGMAC);
+	csi_tmp |= BIT_0;
+	WriteERI(0xDC, 1, csi_tmp, ERIAR_ExGMAC);
+
+	WriteEPHY16(0x19, 0xFF64);
+
+	WriteMMIO8(Config5, ReadMMIO8(Config5) | BIT_0);
+	WriteMMIO8(Config2, ReadMMIO8(Config2) | BIT_7);
+
+	WriteERI(0xC0, 2, 0x00000000, ERIAR_ExGMAC);
+	WriteERI(0xB8, 2, 0x00000000, ERIAR_ExGMAC);
+	WriteERI(0xD5, 1, 0x0000000E, ERIAR_ExGMAC);
+}
 
 
 // TODO - implement
