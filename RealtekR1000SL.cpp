@@ -1610,7 +1610,7 @@ void RealtekR1000::WriteCSI32(int addr,
 	
 	u32 cmd = CSIAR_Write | CSIAR_ByteEn << CSIAR_ByteEn_shift |
 		(addr & CSIAR_Addr_Mask);
-	if (mfcg == MFCG_8402_1 || mfcg == MFCG_8411_1)
+	if (mcfg == MCFG_8402_1 || mcfg == MCFG_8411_1)
 	{
 		cmd |= 0x00020000;
 	}
@@ -1633,10 +1633,10 @@ int RealtekR1000::ReadCSI32(int addr)
 {
 	int value = -1;
 	
-	u32 cmd = CSIAR_Read, CSIAR_ByteEn << CSIAR_ByteEn_shift |
+	u32 cmd = CSIAR_Read | CSIAR_ByteEn << CSIAR_ByteEn_shift |
 		(addr & CSIAR_Addr_Mask);
 
-	if (mfcg == MFCG_8402_1 || mfcg == MFCG_8411_1)
+	if (mcfg == MCFG_8402_1 || mcfg == MCFG_8411_1)
 		cmd |= 0x00020000;
 
 	WriteMMIO32(CSIAR, cmd);
@@ -1826,10 +1826,10 @@ void RealtekR1000::R1000GetMacVersion()
 			if (ICVerID == 0x00100000) {
 				mcfg = MCFG_8168DP_1;
 			} else if (ICVerID == 0x00200000) {
-				mcfg = MCFG_8186DP_2;
-				WriteMMIO32(0xD0, ReadMMIO32(0xD0) | 0x00020000)l
+				mcfg = MCFG_8168DP_2;
+				WriteMMIO32(0xD0, ReadMMIO32(0xD0) | 0x00020000);
 			} else {
-				mcfg = MCFG_8186DP_3;
+				mcfg = MCFG_8168DP_3;
 			}
 			break;
 
@@ -1838,7 +1838,7 @@ void RealtekR1000::R1000GetMacVersion()
 			// Because the R8101 does not specify an ICVerID to check, it will
 			// be the terminal case
 			if (ICVerID == 0x00100000)
-				mcfg = MCFG_8168E_1
+				mcfg = MCFG_8168E_1;
 			else if (ICVerID == 0x00200000)
 				mcfg = MCFG_8168E_2;
 			else
@@ -1849,7 +1849,7 @@ void RealtekR1000::R1000GetMacVersion()
 			if (ICVerID == 0x00000000)
 				mcfg = MCFG_8168E_VL_1;
 			else if (ICVerID == 0x00100000)
-				mcfg = MCFG_8186E_VL_2;
+				mcfg = MCFG_8168E_VL_2;
 			break;
 
 		case 0x30000000:
@@ -1924,7 +1924,7 @@ void RealtekR1000::R1000GetMacVersion()
 			if (ICVerID == 0x00000000)
 				mcfg = MCFG_8168F_1;
 			else if (ICVerID == 0x00100000)
-				mcfg = MCFG_8186F_2;
+				mcfg = MCFG_8168F_2;
 			break;
 
 		case 0x48800000:
