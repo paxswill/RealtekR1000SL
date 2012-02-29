@@ -462,6 +462,7 @@ private:
 
 	void RTL8100DSM(int dev_state);
 
+	void RTL8100EnableEEE();
 	void RTL8100DisableEEE();
 
 	void RTL8100PowerDownPLL();

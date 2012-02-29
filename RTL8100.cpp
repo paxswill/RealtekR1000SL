@@ -131,11 +131,11 @@ void RealtekR1000::RTL8100HwStart()
 
 	if (eee_enable == 1)
 	{
-		RTL8100EEEEnable();
+		RTL8100EnableEEE();
 	}
 	else
 	{
-		RTL8100EEEDisable();
+		RTL8100DisableEEE();
 	}
 }
 
@@ -3253,6 +3253,11 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 			}
 			break;
 	}
+}
+
+// TODO Implement
+void RealtekR1000::RTL8100EnableEEE()
+{
 }
 
 // To save you a hard search, EEE stands for Energy Effcient Ethernet
