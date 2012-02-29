@@ -78,6 +78,7 @@
 #define InterFrameGap	0x03	/* 3 means InterFrameGap = the shortest one */
 
 #define Reserved1_data 	0x3F
+#define Reserved2_data	7
 #define ETTh                0x3F    /* 0x3F means NO threshold */
 
 #define DEFAULT_MTU         ETHERMTU
