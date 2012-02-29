@@ -118,7 +118,7 @@ void RealtekR1000::RTL8100HwStart()
 	u8 options1 = ReadMMIO8(Config3);
 	u8 options2 = ReadMMIO8(Config5);
 	if ((options1 & LinkUp) || (options1 & MagicPacket) ||
-		(options2 & UWD) || (options2 & BWF) || ( options2 & MWF))
+		(options2 & UWF) || (options2 & BWF) || ( options2 & MWF))
 	{
 		wol_enabled = WOL_ENABLED;
 	}
@@ -343,7 +343,7 @@ void RealtekR1000::RTL8105EHwStart()
 		WriteMMIO8(Config5, ReadMMIO8(Config5) | BIT_0);
 		WriteMMIO8(0xF2, ReadMMIO8(0xF2) | BIT_7);
 		WriteMMIO8(0xF1, ReadMMIO8(0xF1) | BIT_7);
-		WriteMMIO8(Config2, ReadMMIO8(Config2) | Bit_7);
+		WriteMMIO8(Config2, ReadMMIO8(Config2) | BIT_7);
 	}
 
 	WriteMMIO8(0xF1, ReadMMIO8(0xF1) | BIT_5 | BIT_3);
