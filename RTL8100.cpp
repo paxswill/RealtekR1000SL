@@ -352,6 +352,7 @@ void RealtekR1000::RTL8105EHwStart()
 	WriteMMIO8(0xD0, ReadMMIO8(0xD0) | BIT_6);
 	WriteMMIO16(0xE0, ReadMMIO16(0xE0) & ~0xDF9C);
 
+	u16 data16;
 	data16 = ReadEPHY16(0x07);
 	data16 |= 0x4000;
 	WriteEPHY16(0x07, data16);
@@ -525,7 +526,7 @@ void RealtekR1000::RTL8105E1HwPhyConfig()
 	WriteGMII16(0x1B, 0x5000);
 	WriteGMII16(0x1f, 0x0000);
 	WriteGMII16(0x16, 0x4104);
-	for (i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++) {
 		IODelay(100);
 		gphy_val = ReadGMII16(0x1E);
 		gphy_val &= 0x03FF;
@@ -533,7 +534,7 @@ void RealtekR1000::RTL8105E1HwPhyConfig()
 			break;
 	}
 	WriteGMII16(0x1f, 0x0005);
-	for (i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++) {
 		IODelay(100);
 		gphy_val = ReadGMII16(0x07);
 		if ((gphy_val & BIT_5)==0)
@@ -1988,7 +1989,7 @@ void RealtekR1000::RTL8105E1HwPhyConfig()
 	WriteGMII16(0x00, 0x0005);
 	WriteGMII16(0x1f, 0x0000);
 	WriteGMII16(0x1f, 0x0005);
-	for (i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++) {
 		IODelay(100);
 		gphy_val = ReadGMII16(0x00);
 		if (gphy_val & BIT_7)
@@ -2624,6 +2625,8 @@ void RealtekR1000::RTL8105EHwPhyConfig()
 
 void RealtekR1000::RTL8402HwPhyConfig()
 {
+	u32 gphy_val;
+	
 	WriteGMII16(0x1F, 0x0000);
 	WriteGMII16(0x18, 0x0310);
 	WriteGMII16(0x1F, 0x0000);
