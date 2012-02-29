@@ -3214,7 +3214,7 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 				{
 					WriteGMII16(0x1F, 0x0000);
 					WriteGMII16(0x11, ReadGMII16(0x11) & ~(1 << 12));
-					WriteMMIO8(GPIO, ReadMMIO(GPIO) | GPIO_en);
+					WriteMMIO8(GPIO, ReadMMIO8(GPIO) | GPIO_en);
 				}
 				else
 				{
@@ -3229,7 +3229,7 @@ void RealtekR1000::RTL8100DSM(int dev_state)
 				if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
 				{
 					WriteMMIO8(GPIO, ReadMMIO8(GPIO) | GPIO_en);
-					WriteGMII16(0x11, ReadGMII16(0x11) | 1( << 12));
+					WriteGMII16(0x11, ReadGMII16(0x11) | (1 << 12));
 				}
 				else if (mcfg == MCFG_8103E_1)
 				{
