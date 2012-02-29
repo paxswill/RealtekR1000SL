@@ -462,9 +462,10 @@ private:
 
 	void RTL8100DSM(int dev_state);
 
+	static const int eee_enable = 0;
 	void RTL8100EnableEEE();
 	void RTL8100DisableEEE();
-
+	
 	void RTL8100PowerDownPLL();
 	void RTL8100PowerUpPLL();
 	
