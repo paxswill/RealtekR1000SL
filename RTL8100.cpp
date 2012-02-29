@@ -3425,13 +3425,13 @@ void RealtekR1000::RTL8100WritePhyIO(int RegAddr, int value)
 {
 	WriteMMIO32(PHYIO, PHYIO_Write |
 		(RegAddr & PHYIO_Reg_Mask) << PHYIO_Reg_shift |
-		(value & PHYIO_DataMask));
+		(value & PHYIO_Data_Mask));
 
 	for (int i = 0; i < 10; i++)
 	{
 		IODelay(100);
 		// Check if the chip has completed writing
-		if (!ReadMMIO32(PHYIO) & PHYIO_Flag))
+		if (!ReadMMIO32(PHYIO) & PHYIO_Flag)
 			break;
 	}
 	IODelay(100);
@@ -3450,7 +3450,7 @@ int RealtekR1000::RTL8100ReadPhyIO(int RegAddr)
 		IODelay(100);
 		if (ReadMMIO32(PHYIO) & PHYIO_Flag)
 		{
-			value = ReadMMIO32(PHYIO) & PHYIO_Data_Mask);
+			value = ReadMMIO32(PHYIO) & PHYIO_Data_Mask;
 			break;
 		}
 	}
