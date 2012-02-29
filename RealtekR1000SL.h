@@ -454,6 +454,7 @@ private:
 	void RTL8401PhyHwConfig();
 	void RTL8105E1HwPhyConfig();
 	void RTL8105EHwPhyConfig();
+	void RTL8402HwPhyConfig();
 
 	void RTL8100NicReset();
 	
