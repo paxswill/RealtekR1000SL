@@ -3394,7 +3394,7 @@ void RealtekR1000::RTL8100PowerUpPLL()
 		case MCFG_8105E_2:
 		case MCFG_8105E_3:
 		case MCFG_8105E_4:
-		case MCFG_8401_1:
+		case MCFG_8402_1:
 			WriteMMIO8(PMCH, ReadMMIO8(PMCH) | BIT_7);
 			break;
 	}
