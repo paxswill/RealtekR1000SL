@@ -1610,16 +1610,12 @@ void RealtekR1000::WriteCSI32(int addr,
 	
 	u32 cmd = CSIAR_Write | CSIAR_ByteEn << CSIAR_ByteEn_shift |
 		(addr & CSIAR_Addr_Mask);
-	WriteMMIO32(CSIAR, 
-				CSIAR_Write |
-				CSIAR_ByteEn << CSIAR_ByteEn_shift |
-				(addr & CSIAR_Addr_Mask));
-
 	if (mfcg == MFCG_8402_1 || mfcg == MFCG_8411_1)
 	{
 		cmd |= 0x00020000;
 	}
-	
+	WriteMMIO32(CSIAR, cmd);
+
 	for (int i = 0; i < 10; i++)
 	{
 		IODelay(100);
