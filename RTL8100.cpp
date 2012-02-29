@@ -3258,7 +3258,7 @@ void RealtekR1000::RTL8100EnableEEE()
 }
 
 // To save you a hard search, EEE stands for Energy Efficient Ethernet
-void RealtekR1000:RTL8100DisableEEE()
+void RealtekR1000::RTL8100DisableEEE()
 {
 	switch (mcfg)
 	{
