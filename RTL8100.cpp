@@ -54,7 +54,7 @@ void RealtekR1000::RTL8100HwStart()
 			(InterFrameGap << TxInterFrameGapShift));
 
 	// Chip specific initializations
-	u16 cplus_cmd = 0
+	u16 cplus_cmd = 0;
 	if ((mcfg >= MCFG_8102E_1 && mcfg <= MCFG_8103E_3) || mcfg == MCFG_8401_1)
 	{
 		RTL8100EHwStart1Gen();
