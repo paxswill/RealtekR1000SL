@@ -287,7 +287,7 @@ const struct RtlChipInfo RealtekR1000::rtl_chip_info[] =
 		1024,
 		RxCfg_128_int_en | (RX_DMA_BURST << RxCfgDMAShift),
 		0xff7e1880,
-		Jumbo_Frame_9k,
+		Jumbo_Frame_9k},
 
 	//
 	// RTL8169/8110 Family
