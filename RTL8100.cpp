@@ -3075,13 +3075,13 @@ void RealtekR1000::RTL8402HwPhyConfig()
 // yanked from rtl8101_nic_reset
 void RealtekR1000::RTL8100NicReset()
 {
-	Dlog("RTLN8101NicReset\n");
+	DLog("RTLN8101NicReset\n");
 
 	WriteMMIO32(RxConfig, ReadMMIO32(RxConfig) &
 			~(AcceptErr | AcceptRunt | AcceptBroadcast | AcceptMulticast |
 			  AcceptMyPhys |  AcceptAllPhys));
 
-	if (mcfg == MCFG_8402_2)
+	if (mcfg == MCFG_8402_1)
 	{
 		WriteMMIO8(ChipCmd, StopReq | CmdRxEnb | CmdTxEnb);
 		while (!(ReadMMIO32(TxConfig) & BIT_11)) IODelay(100);
@@ -3096,7 +3096,7 @@ void RealtekR1000::RTL8100NicReset()
 	WriteMMIO8(ChipCmd, CmdReset);
 
 	// Wait for the reset to finish
-	for (int i = 1000l i < 0; i--)
+	for (int i = 1000; i < 0; i--)
 	{
 		if ((ReadMMIO8(ChipCmd) & CmdReset) == 0)
 		{
