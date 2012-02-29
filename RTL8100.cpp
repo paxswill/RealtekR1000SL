@@ -33,11 +33,11 @@
 #include "impl_defs.h"
 
 /*** Static Initialization ***/
-const u16 RealtekR1000:rtl8101_intr_mask =
+const u16 RealtekR1000::rtl8101_intr_mask =
 	SYSErr | LinkChg | RxDescUnavail | TxErr | TxOK | RxErr | RxOK;
-const u16 RealtekR1000:rtl8101_napi_event =
+const u16 RealtekR1000::rtl8101_napi_event =
 	RxOK | RxDescUnavail | RxFIFOOver | TxOK | TxErr;
-const uint32_t RealtekR1000:rtl8101_rx_config =
+const uint32_t RealtekR1000::rtl8101_rx_config =
     (Reserved2_data << Reserved2_shift) | (RX_DMA_BURST << RxCfgDMAShift);
 // Enable/Disable Energy Effcient Ethernet
 static int eee_enable = 0;
