@@ -3325,25 +3325,25 @@ void RealtekR1000::RTL8100PowerDownPLL()
 		if ((ReadMMIO8(0x8C) & BIT_28) && !(ReadMMIO8(0xEF) & BIT_2))
 		{
 			u32 gphy_val;
-			WriteGBII16(0x1F, 0x0000);
-			WriteGBII16(0x04, 0x0061);
-			WriteGBII16(0x00, 0x1200);
-			WriteGBII16(0x18, 0x0310);
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(0x04, 0x0061);
+			WriteGMII16(0x00, 0x1200);
+			WriteGMII16(0x18, 0x0310);
 			IODelay(20 * 1000);
-			WriteGBII16(0x1F, 0x0005);
-			gphy_val = ReadGII16(0x1A);
+			WriteGMII16(0x1F, 0x0005);
+			gphy_val = ReadGMII16(0x1A);
 			gphy_val |= BIT_8 | BIT_0;
-			WriteGBII16(0x1A, gphy_val);
+			WriteGMII16(0x1A, gphy_val);
 			IODelay(20 * 1000);
-			WriteGBII16(0x1F, 0x0000);
-			WriteGBII16(0x18, 0x8310);
+			WriteGMII16(0x1F, 0x0000);
+			WriteGMII16(0x18, 0x8310);
 		}
 	}
 
 	if (wol_enabled == WOL_ENABLED)
 	{
-		WriteGBII16(0x1F, 0x0000);
-		WriteGBII16(0x00, 0x0000);
+		WriteGMII16(0x1F, 0x0000);
+		WriteGMII16(0x00, 0x0000);
 		if (mcfg >= MCFG_8105E_1)
 		{
 			WriteMMIO32(RxConfig, ReadMMIO32(RxConfig) | AcceptBroadcast |
@@ -3404,7 +3404,7 @@ void RealtekR1000::RTL8100PowerUpPLL()
 
 void RealtekR1000::RTL8100PowerDownPHY()
 {
-	WriteMGII16(0x1F, 0x0000);
+	WriteGMII16(0x1F, 0x0000);
 	if (mcfg == MCFG_8105E_1)
 	{
 		WriteGMII16(PHY_BMCR, BMCR_ANENABLE | BMCR_PDOWN);
