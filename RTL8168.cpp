@@ -490,7 +490,7 @@ void RealtekR1000::RTL8168CPHwStart2()
 		/*When the register offset of PCI configuration space larger than 0xff, use CSI to access it.*/
 		csi_tmp = ReadCSI32(0x70c) & 0x00ffffff;
 		WriteCSI32(0x70c, csi_tmp | 0x27000000);
-		RTL8168WriteERI(0x1EC, 1, 0x07, ERIAR_ASF);
+		WriteERI(0x1EC, 1, 0x07, ERIAR_ASF);
 		
 		//disable clock request.
 		pciDev->configWrite8(0x81, 0x00);
@@ -548,7 +548,7 @@ void RealtekR1000::RTL8168CPHwStart2()
 		/*When the register offset of PCI configuration space larger than 0xff, use CSI to access it.*/
 		csi_tmp = ReadCSI32(0x70c) & 0x00ffffff;
 		WriteCSI32(0x70c, csi_tmp | 0x27000000);
-		RTL8168WriteERI(0x1EC, 1, 0x07, ERIAR_ASF);
+		WriteERI(0x1EC, 1, 0x07, ERIAR_ASF);
 		
 		//disable clock request.
 		pciDev->configWrite8(0x81, 0x00);

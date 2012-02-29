@@ -1679,7 +1679,7 @@ int RealtekR1000::WriteERI(int addr,
 		else if (len == 3)	mask = (0xFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
 		else			mask = (0xFFFFFFFF << (val_shift * 8)) & 0xFFFFFFFF;
 		
-		value1 = RTL8168ReadERI(addr, 4, type) & ~mask;
+		value1 = ReadERI(addr, 4, type) & ~mask;
 		value1 |= (((value << val_shift * 8) >> shift * 8));
 		
 		WriteMMIO32(ERIDR, value1);
