@@ -39,8 +39,9 @@ const u16 RealtekR1000::rtl8101_napi_event =
 	RxOK | RxDescUnavail | RxFIFOOver | TxOK | TxErr;
 const uint32_t RealtekR1000::rtl8101_rx_config =
     (Reserved2_data << RxCfgFIFOShift) | (RX_DMA_BURST << RxCfgDMAShift);
+
 // Enable/Disable Energy Effcient Ethernet
-static int eee_enable = 0;
+# define EEE_ENABLE 0
 
 // TODO - implement
 void RealtekR1000::RTL8100HwStart()
@@ -3314,7 +3315,7 @@ void RealtekR1000::RTL8100PowerDownPLL()
 {
 	DLog("RTL8100PowerDownPLL\n");
 	if (MCFG_8105E_1 <= mcfg && mcfg <= MCFG_8105E_4)
-			&& eee_enable == 1)
+			&& EEE_ENABLE)
 	{
 		RTL8100DisableEEE();
 	}
