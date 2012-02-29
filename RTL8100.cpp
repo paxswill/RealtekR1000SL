@@ -262,7 +262,7 @@ void RealtekR1000::RTL8105EHwStart1()
 	WriteMMIO8(ETThReg, 0x0C);
 
 	/* Set CPI config offset 0x79 to 0x50 */
-	pciDev-writeConfig8(0x79, 0x50);
+	pciDev->configWrite8(0x79, 0x50);
 
 	/* TODO Enable tx checksum offload */
 	
@@ -337,7 +337,7 @@ void RealtekR1000::RTL8105EHwStart()
 
 	/* TODO enable chesksum offload */
 
-	pci_config = pciDev->readConfig8(0x80);
+	pci_config = pciDev->configRead8(0x80);
 	if (pci_config & 0x03)
 	{
 		WriteMMIO8(Config5, ReadMMIO8(Config5) | BIT_0);
