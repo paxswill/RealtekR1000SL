@@ -3121,22 +3121,22 @@ void RealtekR1000::RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autone
 	if (autonegIn == AUTONEG_ENABLE)
 	{
 		/* n-way force */
-		if ((speed == SPEED_10) && (duplex == DUPLEX__Half))
+		if ((speed == SPEED_10) && (duplex == DUPLEX_HALF))
 		{
 			auto_nego = PHY_Cap_10_Half;
 		}
-		else if ((speed = SPEED_10) && (duplex == DUPLE__Full))
+		else if ((speed = SPEED_10) && (duplex == DUPLEX_FULL))
 		{
 			auto_nego |= PHY_Cap_10_Half
 				      |  PHY_Cap_10_Full;
 		}
-		else if ((speed == SPEED_100) && (duplex == DUPLEX__Half))
+		else if ((speed == SPEED_100) && (duplex == DUPLEX_HALF))
 		{
 			auto_nego |= PHY_Cap_100_Half
 				      |  PHY_Cap_10_Full
 					  |  PHY_Cap_10_Half;
 		}
-		else if ((speed == SPEED_100) && (duplex == DUPLEX__Full))
+		else if ((speed == SPEED_100) && (duplex == DUPLEX_FULL))
 		{
 			auto_nego |= PHY_Cap_100_Full
 				      |  PHY_Cap_100_Half
@@ -3152,7 +3152,7 @@ void RealtekR1000::RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autone
 		if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2)
 		{
 			WriteGMII16(0x1F, 0x0000);
-			WriteGMII16(PHY_BMCR, BMCP_RESET);
+			WriteGMII16(PHY_BMCR, BMCR_RESET);
 			IODelay(100);
 			RTL8100HwPhyConfig();
 		}
@@ -3162,16 +3162,16 @@ void RealtekR1000::RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autone
 				  (speed == SPEED_10))
 		{
 			WriteGMII16(0x1F, 0x0000);
-			WriteGMII16(PHY_BMCR, BMCP_RESET);
+			WriteGMII16(PHY_BMCR, BMCR_RESET);
 			RTL8100HwPhyConfig();
 		}
 
 		WriteGMII16(0x1F, 0x0000);
 		WriteGMII16(PHY_AUTO_NEGO_REG, auto_nego);
 		if (mcfg == MCFG_8105E_1)
-			WriteGMII16(PHY_BMCR, BMCP_RESET | BMCR_ANENABLE | BMCP_ANRESTART);
+			WriteGMII16(PHY_BMCR, BMCR_RESET | BMCR_ANENABLE | BMCR_ANRESTART);
 		else
-			WriteGMII16(PHY_BMCR, BMCP_ANENABLE, BMCP_ANRESTART);
+			WriteGMII16(PHY_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
 	}
 	else
 	{
