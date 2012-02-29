@@ -446,7 +446,7 @@ private:
 	void RTL8100HwStart1Gen();
 	void RTL8105EHwStart1();
 	void RTL8105EHwStart();
-	void RTL8401HwStart();
+	void RTL8402HwStart();
 
 	void RTL8100HwPhyConfig();
 	// Chip specific configuration

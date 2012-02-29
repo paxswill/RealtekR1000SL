@@ -57,7 +57,7 @@ void RealtekR1000::RTL8100HwStart()
 	u16 cplus_cmd = 0;
 	if ((mcfg >= MCFG_8102E_1 && mcfg <= MCFG_8103E_3) || mcfg == MCFG_8401_1)
 	{
-		RTL8100EHwStart1Gen();
+		RTL8100HwStart1Gen();
 	}
 	else if (mcfg == MCFG_8105E_1)
 	{
@@ -163,7 +163,7 @@ void RealtekR1000::RTL8100HwStart1Gen()
 			WriteMMIO8(0xF5, ReadMMIO8(0xF5) | BIT_2);
 		}
 		pciDev->configWrite8(0x81, 1);
-		if (mcfg == MCFG_8013E_3)
+		if (mcfg == MCFG_8103E_3)
 		{
 			if (ReadEPHY16(0x10) == 0x0008)
 			{
@@ -205,12 +205,12 @@ void RealtekR1000::RTL8100HwStart1Gen()
 
 	// In the original source, there's a lot of bit shifts to get 0xDF9{8,C}
 	if (mcfg == MCFG_8102E_1 || mcfg == MCFG_8102E_2 ||
-	    mcfg == MCFG_8013E_1)
+	    mcfg == MCFG_8103E_1)
 	{
 		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF98);
 	}
 	else if(mcfg == MCFG_8103E_2 || mcfg == MCFG_8103E_3 ||
-	        mcfg == MCFG_8401)
+	        mcfg == MCFG_8401_1)
 	{
 		WriteMMIO16(CPlusCmd, ReadMMIO8(CPlusCmd) & ~0xDF9C);
 	}
@@ -224,7 +224,7 @@ void RealtekR1000::RTL8100HwStart1Gen()
 	//E-PHY config
 	switch (mcfg){
 	case MCFG_8102E_1:
-		WriteEPHY(0x03, 0xC2F9);
+		WriteEPHY16(0x03, 0xC2F9);
 		break;
 	case MCFG_8102E_2:
 		WriteEPHY16(0x01, 0x6FE5);
@@ -399,7 +399,6 @@ void RealtekR1000::RTL8105EHwStart()
 
 	if (mcfg == MCFG_8105E_4)
 	{
-		unsigned long flags;
 		if ((ReadMMIO8(0x8C) & BIT_28) && !(ReadMMIO8(0xEF) & BIT_2))
 		{
 			WriteGMII16(0x1F, 0x0005);
@@ -435,7 +434,7 @@ void RealtekR1000::RTL8402HwStart()
 	WriteERI(0xE8, 4, 0x00000006, ERIAR_ExGMAC);
 
 	WriteMMIO32(TxConfig, ReadMMIO32(TxConfig) | BIT_7);
-	WriteMMIO8(0xD3, ReadMMIO8(0xD3), & ~BIT_7);
+	WriteMMIO8(0xD3, ReadMMIO8(0xD3) & ~BIT_7);
 	csi_tmp = ReadERI(0xDC, 1, ERIAR_ExGMAC);
 	csi_tmp &= ~BIT_0;
 	WriteERI(0xDC, 1, csi_tmp, ERIAR_ExGMAC);
