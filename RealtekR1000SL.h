@@ -449,6 +449,11 @@ private:
 	void RTL8401HwStart();
 
 	void RTL8100HwPhyConfig();
+	// Chip specific configuration
+	void RTL8102EHwPhyConfig();
+	void RTL8401PhyHwConfig();
+	void RTL8105E1HwPhyConfig();
+
 	void RTL8100NicReset();
 	
 	void RTL8100SetMedium(ushort speedIn, uchar duplexIn, uchar autonegIn);
