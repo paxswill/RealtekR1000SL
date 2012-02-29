@@ -3287,7 +3287,7 @@ void RealtekR1000::RTL8100DisableEEE()
 			WriteGMII16(0x1E, 0x0000);
 			WriteGMII16(0x1D, 0x0000);
 
-			WriteGMII16(MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
+			WriteGMII16(PHY_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
 			break;
 		case MCFG_8402_1:
 			WriteERI(0x1B0, 2, 0, ERIAR_ExGMAC);
@@ -3302,7 +3302,7 @@ void RealtekR1000::RTL8100DisableEEE()
 			WriteGMII16(0x0E, 0x0000);
 			WriteGMII16(0x0D, 0x0000);
 
-			WriteGMII16(MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
+			WriteGMII16(PHY_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
 			break;
 		default:
 			DLog("RTL8100DisableEEE called on an unsupported chip.\n");
