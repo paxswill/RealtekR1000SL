@@ -502,11 +502,11 @@ void RealtekR1000::RTL8401PhyHwConfig()
 	WriteGMII16(0x0F, ReadGMII16(0x0F) | BIT_0 | BIT_1);
 	WriteGMII16(0x1F, 0x0000);
 
-	rtl8101_phyio_write(ioaddr, 0x0E, 0x0068);
-	rtl8101_phyio_write(ioaddr, 0x0E, 0x0069);
-	rtl8101_phyio_write(ioaddr, 0x0E, 0x006A);
-	rtl8101_phyio_write(ioaddr, 0x0E, 0x006B);
-	rtl8101_phyio_write(ioaddr, 0x0E, 0x006C);
+	RTL8100WritePhyIO(0x0E, 0x0068);
+	RTL8100WritePhyIO(0x0E, 0x0069);
+	RTL8100WritePhyIO(0x0E, 0x006A);
+	RTL8100WritePhyIO(0x0E, 0x006B);
+	RTL8100WritePhyIO(0x0E, 0x006C);
 }
 
 void RealtekR1000::RTL8105E1HwPhyConfig()
