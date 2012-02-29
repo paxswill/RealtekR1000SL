@@ -369,7 +369,6 @@ enum r1000_register_content {
 	Beacon_en	= (1 << 0),	/* This bit is reserved in RTL8168B*/
 	
 	/* Config4 register */
-	LanWake		= (1 << 1),	/* This bit is only defined in RTL8101 */
 	Jumbo_En1	= (1 << 1),	/* This bit is reserved in RTL8168B*/
 	
 	/* Config5 register */
