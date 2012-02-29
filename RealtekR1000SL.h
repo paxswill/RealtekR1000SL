@@ -462,6 +462,9 @@ private:
 	
 	void RTL8100PowerDownPHY();
 	void RTL8100PowerUpPHY();
+
+	void RTL8100WritePhyIO(int RegAddr, int value);
+	int RTL8100ReadPhyIO(int RegAddr);
 	
 	//
 	// RTL8168

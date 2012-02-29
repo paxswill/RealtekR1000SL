@@ -801,3 +801,40 @@ void RealtekR1000::RTL8100PowerUpPHY()
 	WriteGMII16(0x1F, 0x0000);
 	WriteGMII16(PHY_BMCR, BMCR_ANENABLE);
 }
+
+void RealtekR1000::RTL8100WritePhyIO(int RegAddr, int value)
+{
+	WriteMMIO32(PHYIO, PHYIO_Write |
+		(RegAddr & PHYIO_Reg_Mask) << PHYIO_Reg_shift |
+		(value & PHYIO_DataMask));
+
+	for (int i = 0; i < 10; i++)
+	{
+		IODelay(100);
+		// Check if the chip has completed writing
+		if (!ReadMMIO32(PHYIO) & PHYIO_Flag))
+			break;
+	}
+	IODelay(100);
+}
+
+// This is disabled via the preprocessor in the orignal source
+int RealtekR1000::RTL8100ReadPhyIO(int RegAddr)
+{
+	int value = -1;
+
+	WriteMMIO32(PHYIO,
+		   PHYIO_Read | (RegAddr & PHYIO_Reg_Mask) << PHYIO_Reg_shift);
+
+	for (int i = 0; i < 10; i++)
+	{
+		IODelay(100);
+		if (ReadMMIO32(PHYIO) & PHYIO_Flag)
+		{
+			value = ReadMMIO32(PHYIO) & PHYIO_Data_Mask);
+			break;
+		}
+	}
+	IODelay(100);
+	return value;
+}
