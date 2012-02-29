@@ -2068,7 +2068,7 @@ void RealtekR1000::RTL8105EHwPhyConfig()
 
 	IODelay(100);
 
-	if (tp->mcfg == CFG_METHOD_13 && (ReadMMIO8(0xEF) & BIT_2)) {
+	if (mcfg == MCFG_8105E_4 && (ReadMMIO8(0xEF) & BIT_2)) {
 		WriteGMII16(0x1F, 0x0001);
 		gphy_val = ReadGMII16(0x1B) | BIT_2;
 		WriteGMII16(0x1B, gphy_val);
